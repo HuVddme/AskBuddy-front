@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import "../styles/Home.css";
+import buddyLogo from '../assets/BuddysBirthday.png';
 
 const LandingPage = () => {
   const [typedText, setTypedText] = useState("")
@@ -23,6 +24,11 @@ const LandingPage = () => {
   return (
     <div className="landing-container">
       <div className="content">
+      <img 
+          className="logo" 
+          src={buddyLogo} 
+          alt="Buddy's Brain Logo" 
+        />
         <h1 className="animate-slide-in">Welcome to Buddy's Brain</h1>
         
         {/* Typewriter Text */}

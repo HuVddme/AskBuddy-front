@@ -9,6 +9,13 @@
   padding: 20px;
 }
 
+.logo {
+  width: 150px;    /* Change this to the desired width */
+  height: auto;    /* Keeps the aspect ratio */
+  margin-bottom: 20px; /* Adjust spacing as needed */
+}
+
+
 .content {
   max-width: 800px;
   text-align: center;
