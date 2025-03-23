@@ -161,25 +161,24 @@ const AskQuestionPage = () => {
             <h2>Search Results:</h2>
             <div className="results-scroll">
               <ul>
-                {results.map((item) => (
-                  <li
-                    key={item._id}
-                    className="result-item"
-                    onClick={() => setSelectedResult(item)}
+              {results.map((item) => (
+                <li
+                  key={item._id}
+                  className="result-item hover-highlight"
+                  onClick={() => setSelectedResult(item)}
+                >
+                  <h3 className="result-title">{item.title}</h3>
+                  <a
+                    href={item.media_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="result-link"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <h3 className="result-title">{item.title}</h3>
-                    <p className="result-summary">{item.summary}</p>
-                    <a
-                      href={item.media_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="result-link"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      View Resource
-                    </a>
-                  </li>
-                ))}
+                    View Resource
+                  </a>
+                </li>
+              ))}
               </ul>
             </div>
           </div>
@@ -203,6 +202,7 @@ const AskQuestionPage = () => {
             </div>
           </div>
         )}
+
   
       </div> {/* .content */}
     </div> // .page-container

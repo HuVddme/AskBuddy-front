@@ -223,12 +223,17 @@ h1 {
   margin: 0;
 }
 
-/* Individual Result Block */
 .result-item {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 16px 20px;
+  margin: 12px 0; /* spacing between rows */
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #fff;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
+  position: relative; /* important for shadow layering */
+  z-index: 0;
 }
+
 
 .result-item:last-child {
   border-bottom: none;
@@ -267,7 +272,8 @@ h1 {
 .results-scroll {
   max-height: 300px;
   overflow-y: auto;
-  padding-right: 10px;
+  padding-right: 20px;
+  padding-left: 20px;
   margin-top: 10px;
 }
 
@@ -284,6 +290,7 @@ h1 {
 .results-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -291,11 +298,14 @@ h1 {
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.6);
+  z-index: 999;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  padding: 20px;
+  overflow: auto;
 }
+
 
 .modal-content {
   background: #fff;
@@ -336,4 +346,18 @@ h1 {
 
 .modal-close:hover {
   color: #333;
+}
+
+.hover-highlight {
+  transition: box-shadow 0.25s ease, background-color 0.25s ease, transform 0.2s ease;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.hover-highlight:hover {
+  box-shadow: 0 0 20px 4px rgba(52, 152, 219, 0.4);
+  background-color: rgba(52, 152, 219, 0.05);
+  transform: translateY(-2px);
+  z-index: 1;
 }
