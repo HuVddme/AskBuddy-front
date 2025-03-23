@@ -105,9 +105,9 @@ const AskQuestionPage = () => {
     }
     
     // Customize speech parameters
-    utterance.rate = 1.0;  // Speed
+    utterance.rate = 1.15;  // Speed
     utterance.pitch = 1.0; // Pitch
-    utterance.volume = 1.0; // Volume
+    utterance.volume = 1.3; // Volume
     
     window.speechSynthesis.speak(utterance);
   };
