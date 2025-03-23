@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import '/Users/valentine/AskBuddy/AskBuddy-front/my-vite-app/src/styles/Home.css'
+import "../styles/Home.css";
 
 const LandingPage = () => {
   const [typedText, setTypedText] = useState("")
@@ -42,21 +42,3 @@ const LandingPage = () => {
 }
 
 export default LandingPage
-//   return (
-//     <div className="landing-container">
-//       <div className="content">
-//         <h1 className="animate-slide-in">Welcome to Buddy's Brain</h1>
-//         <div className="buttons">
-//           <Link className="animate-slide-in" to="/submit">
-//             Submit Your Document
-//           </Link>
-//           <Link className="animate-slide-in" to="/ask">
-//             Ask a Question
-//           </Link>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default LandingPage

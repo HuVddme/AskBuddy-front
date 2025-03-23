@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '/Users/valentine/AskBuddy/AskBuddy-front/my-vite-app/src/styles/AskQuestion.css';
+
+import "../styles/AskQuestion.css";
 
 const AskQuestionPage = () => {
   const [question, setQuestion] = useState('');

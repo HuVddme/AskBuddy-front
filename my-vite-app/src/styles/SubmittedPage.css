@@ -1,0 +1,164 @@
+/* SubmittedPage.css */
+.landing-container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+  }
+  
+  .content {
+    max-width: 800px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  }
+  
+  h1 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+  
+  .typewriter-text {
+    min-height: 3rem;
+    color: #3498db;
+    font-size: 1.8rem;
+    margin-bottom: 2.5rem;
+    font-weight: 500;
+    position: relative;
+  }
+  
+  .typewriter-text::after {
+    content: "|";
+    position: absolute;
+    animation: blink 1s infinite;
+  }
+  
+  .success-message {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  
+  .success-icon {
+    font-size: 5rem;
+    color: #27ae60;
+    margin-bottom: 1rem;
+    animation: scaleIn 0.5s ease-out;
+    height: 100px;
+    width: 100px;
+    line-height: 100px;
+    border-radius: 50%;
+    background-color: rgba(39, 174, 96, 0.1);
+    margin: 0 auto 1.5rem;
+  }
+  
+  @keyframes scaleIn {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    70% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  
+  /* Button styles */
+  .buttons-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .button-link {
+    display: inline-block;
+    padding: 14px 28px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid #3498db;
+    font-size: 1.1rem;
+  }
+  
+  .button-link:hover {
+    background-color: transparent;
+    color: #3498db;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+  }
+  
+  .animate-slide-in {
+    animation: slideIn 0.8s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  
+  @keyframes slideIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .content {
+      padding: 2rem;
+    }
+    
+    h1 {
+      font-size: 2rem;
+    }
+    
+    .typewriter-text {
+      font-size: 1.5rem;
+      min-height: 2.5rem;
+    }
+    
+    .success-message {
+      font-size: 1rem;
+    }
+    
+    .success-icon {
+      font-size: 4rem;
+      height: 80px;
+      width: 80px;
+      line-height: 80px;
+    }
+    
+    .button-link {
+      padding: 12px 24px;
+      font-size: 1rem;
+    }
+    
+    .buttons-row {
+      flex-direction: column;
+      align-items: center;
+    }
+  }

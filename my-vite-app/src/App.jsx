@@ -7,11 +7,6 @@ import AskQuestionPage from './pages/AskQuestion'
 const App = () => {
   return (
     <Router>
-      <nav style={{ display: 'flex', gap: '1rem', padding: '1rem' }}>
-        <Link to="/">Home</Link>
-        <Link to="/submit">Submit Document</Link>
-        <Link to="/ask">Ask a Question</Link>
-      </nav>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/submit" element={<SubmitDocumentPage />} />
