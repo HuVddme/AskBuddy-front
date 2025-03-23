@@ -66,7 +66,7 @@ const AskQuestionPage = () => {
 
     try {
       ''
-      const response = await axios.post('https://buddysbrain-backend-production.up.railway.app/search', { query: userMessage.text });
+      const response = await axios.post('http://0.0.0.0:8000/search', { query: userMessage.text });
       console.log('Backend response:', response.data);
       setResults(response.data);
     } catch (error) {

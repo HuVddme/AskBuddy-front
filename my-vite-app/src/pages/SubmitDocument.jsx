@@ -44,7 +44,7 @@ const SubmitDocumentPage = () => {
           summary: description
         };
 
-        await axios.post('https://buddysbrain-backend-production.up.railway.app/resources', payload);
+        await axios.post('http://0.0.0.0:8000/resources', payload);
       } else {
         const formData = new FormData();
         formData.append('file', uploadFile);
@@ -53,7 +53,7 @@ const SubmitDocumentPage = () => {
         formData.append('course', courseName);
         formData.append('summary', description);
 
-        await axios.post('https://buddysbrain-backend-production.up.railway.app/upload', formData, {
+        await axios.post('http://0.0.0.0:8000/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }
