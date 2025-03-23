@@ -1,0 +1,39 @@
+.page-container {
+    width: 100vw;
+    min-height: 100vh;
+    background-color: #003a63;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Navbar at the top with right-aligned text */
+  .navbar {
+    display: flex;
+    justify-content: flex-end; /* Change to flex-start for left alignment if desired */
+    gap: 1rem;
+    padding: 1rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  .content {
+    margin-top: 70px; /* Space for the fixed navbar */
+    padding: 2rem;
+    flex: 1;
+  }
+  
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
