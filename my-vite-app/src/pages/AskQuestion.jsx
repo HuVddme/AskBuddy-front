@@ -193,15 +193,59 @@ const AskQuestionPage = () => {
             <h2>{selectedResult.title}</h2>
             <p>{selectedResult.summary}</p>
             {/* Preview based on media_type */}
+            {/* Media Previews */}
             {selectedResult.media_type === 'document' && (
               <iframe
-                src={selectedResult.media_link}
+                src={`https://docs.google.com/gview?url=${encodeURIComponent(selectedResult.media_link)}&embedded=true`}
                 title="Document Preview"
                 width="100%"
-                height="400px"
+                height="500px"
                 style={{ border: '1px solid #ccc', borderRadius: '8px' }}
               />
             )}
+
+            {selectedResult.media_type === 'image' && (
+              <img
+                src={selectedResult.media_link}
+                alt="Image Preview"
+                style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }}
+              />
+            )}
+
+            {selectedResult.media_type === 'video' && selectedResult.media_link.includes('youtube.com') && (
+              <iframe
+                width="100%"
+                height="400px"
+                src={`https://www.youtube.com/embed/${new URL(selectedResult.media_link).searchParams.get('v')}`}
+                title="YouTube Video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: '8px' }}
+              />
+            )}
+
+            {selectedResult.media_type === 'video' && !selectedResult.media_link.includes('youtube.com') && (
+              <video
+                controls
+                width="100%"
+                style={{ borderRadius: '8px', maxHeight: '400px' }}
+              >
+                <source src={selectedResult.media_link} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+
+            {selectedResult.media_type === 'article' && (
+              <iframe
+                src={selectedResult.media_link}
+                title="Article Preview"
+                width="100%"
+                height="500px"
+                style={{ border: '1px solid #ccc', borderRadius: '8px' }}
+              />
+            )}
+
 
             {selectedResult.media_type === 'image' && (
               <img
