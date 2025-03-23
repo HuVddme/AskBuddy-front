@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaMicrophone, FaStop } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-
 import '../styles/AskQuestion.css';
 
-const AskQuestionPage = () => {
+const Valentine = () => {
   const [question, setQuestion] = useState('');
   const [recording, setRecording] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -104,25 +103,11 @@ const AskQuestionPage = () => {
       const aiResponseText = 'This is a simulated response from Buddy.';
       const aiResponse = { sender: 'buddy', text: aiResponseText };
       setMessages(prev => [...prev, aiResponse]);
-  
-      // Create the utterance for text-to-speech
+      // Use text-to-speech for Buddy's response
       const utterance = new SpeechSynthesisUtterance(aiResponseText);
-      
-      // Retrieve the list of available voices
-      const voices = window.speechSynthesis.getVoices();
-      // Optionally log voices to find the one you prefer
-      console.log(voices);
-      
-      // Select a voice by its name or criteria. Replace the voice name with your preferred one.
-      const selectedVoice = voices.find(voice => voice.name === 'Google UK English Female');
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-      }
-      
       window.speechSynthesis.speak(utterance);
     }, 1000);
   };
-  
 
   return (
     <div className="page-container">
@@ -172,4 +157,4 @@ const AskQuestionPage = () => {
   );
 };
 
-export default AskQuestionPage;
+export default Valentine;

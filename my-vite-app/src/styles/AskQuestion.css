@@ -1,3 +1,4 @@
+/* General Container */
 .page-container {
   height: 100vh;
   width: 100vw;
@@ -10,6 +11,7 @@
   position: relative;
 }
 
+/* Card-style Content */
 .content {
   max-width: 800px;
   width: 90%;
@@ -26,6 +28,7 @@
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
 }
 
+/* Headings */
 h1 {
   color: #2c3e50;
   margin-bottom: 2rem;
@@ -33,6 +36,7 @@ h1 {
   font-weight: 700;
 }
 
+/* Form Container */
 .form-container {
   display: flex;
   flex-direction: column;
@@ -70,37 +74,61 @@ h1 {
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
-button[type="submit"] {
-  padding: 16px 32px;
+/* Record Button Styling (Centered) */
+.record-btn {
+  padding: 10px;
+  border: none;
   background-color: #3498db;
   color: white;
-  text-decoration: none;
-  border-radius: 30px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  border: 2px solid #3498db;
-  font-size: 1.1rem;
+  border-radius: 50%;
   cursor: pointer;
-  margin-top: 10px;
-  align-self: center;
-  width: 220px;
+  transition: transform 0.3s ease;
+  display: block;
+  margin: 10px auto; /* centers the button horizontally */
 }
 
-button[type="submit"]:hover {
-  background-color: transparent;
-  color: #3498db;
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+.record-btn.recording {
+  background-color: #e74c3c;
 }
 
-/* Animation for the question input */
-.form-group input {
-  animation: fadeIn 0.8s ease forwards;
+.record-btn:hover {
+  transform: scale(1.1);
 }
 
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
+/* Recording Indicator */
+.recording-indicator {
+  font-size: 1rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.pulse-recording {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* Chat Container and Messages */
+.chat-container {
+  margin-top: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.chat-message {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.chat-message.user {
+  background-color: #ecf0f1;
+}
+
+.chat-message.buddy {
+  background-color: #bdc3c7;
 }
 
 /* Back Button Styling */
@@ -110,8 +138,8 @@ button[type="submit"]:hover {
   left: 20px;
   display: inline-block;
   padding: 14px 28px;
-  width: 200px; /* Adjusted width */
-  text-align: center; /* Center the text */
+  width: 200px;
+  text-align: center;
   background-color: #3498db;
   color: white;
   text-decoration: none;
@@ -130,7 +158,17 @@ button[type="submit"]:hover {
   box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
 }
 
-/* Media queries for responsive design */
+/* Animation for input appearance */
+.form-group input {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .content {
     padding: 2rem;
@@ -150,12 +188,6 @@ button[type="submit"]:hover {
     padding: 14px;
     font-size: 1rem;
   }
-  
-  button[type="submit"] {
-    padding: 14px 28px;
-    font-size: 1rem;
-    width: 200px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -169,10 +201,5 @@ button[type="submit"]:hover {
   
   .form-group input {
     padding: 12px;
-  }
-  
-  button[type="submit"] {
-    width: 100%;
-    padding: 12px 24px;
   }
 }
