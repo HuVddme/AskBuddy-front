@@ -3,13 +3,14 @@
   width: 100vw;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* changed from center */
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   font-family: 'Poppins', sans-serif;
-  padding: 20px;
+  padding: 60px 20px 20px; /* ⬅️ added top padding */
   position: relative;
   overflow: auto;
 }
+
 
 .content {
   max-width: 800px;
@@ -21,6 +22,10 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   margin: 40px auto;
+}
+
+.content {
+  margin: 60px auto 40px; /* ⬅️ increased top margin */
 }
 
 .content:hover {
@@ -91,7 +96,7 @@ h1 {
 }
 
 button[type="submit"] {
-  padding: 14px 28px;
+  padding: 10px 20px; /* smaller and cleaner */
   background-color: #3498db;
   color: white;
   text-decoration: none;

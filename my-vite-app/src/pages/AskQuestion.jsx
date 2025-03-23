@@ -10,6 +10,7 @@ const AskQuestionPage = () => {
   const [recording, setRecording] = useState(false);
   const [messages, setMessages] = useState([]);
   const [results, setResults] = useState([]); // 🔹 New state to store backend search results
+  const [selectedResult, setSelectedResult] = useState(null);
 
   const recognitionRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -118,15 +119,11 @@ const AskQuestionPage = () => {
       <Link to="/" className="back-button">Back</Link>
       <div className="content">
         <h1>Ask Buddy the Bison</h1>
+  
+        {/* Your form and mic button */}
         <form onSubmit={(e) => { e.preventDefault(); submitQuestion(); }} className="form-container">
           <div className="form-group">
-            {/* <label>Your Question:</label> */}
-            {/* <input 
-              type="text"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Type your question here..."
-            /> */}
+            {/* input or other controls */}
           </div>
           <button
             type="button"
@@ -136,7 +133,8 @@ const AskQuestionPage = () => {
             {recording ? <FaStop size={20} /> : <FaMicrophone size={20} />}
           </button>
         </form>
-
+  
+        {/* Recording indicator */}
         <div className="recording-indicator">
           {recording ? (
             <div className="pulse-recording">
@@ -146,8 +144,8 @@ const AskQuestionPage = () => {
             'Click the microphone icon to start recording your question.'
           )}
         </div>
-
-        {/* 🔹 Display chat messages */}
+  
+        {/* Chat messages */}
         <div className="chat-container">
           {messages.map((msg, index) => (
             <div key={index} className={`chat-message ${msg.sender}`}>
@@ -156,35 +154,58 @@ const AskQuestionPage = () => {
             </div>
           ))}
         </div>
-
-        {/* 🔹 Display list of result titles */}
+  
+        {/* Search results */}
         {results.length > 0 && (
-  <div className="results-container">
-    <h2>Search Results:</h2>
-    <div className="results-scroll">
-      <ul>
-        {results.map((item) => (
-            <li key={item._id} className="result-item">
-              <h3 className="result-title">{item.title}</h3>
-              <p className="result-summary">{item.summary}</p>
-              <a
-                href={item.media_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="result-link"
-              >
-                View Resource
-              </a>
-              </li>
-            ))}
+          <div className="results-container">
+            <h2>Search Results:</h2>
+            <div className="results-scroll">
+              <ul>
+                {results.map((item) => (
+                  <li
+                    key={item._id}
+                    className="result-item"
+                    onClick={() => setSelectedResult(item)}
+                  >
+                    <h3 className="result-title">{item.title}</h3>
+                    <p className="result-summary">{item.summary}</p>
+                    <a
+                      href={item.media_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="result-link"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      View Resource
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         )}
-
-
-      </div>
-    </div>
+  
+        {/* 🔽 PLACE THIS RIGHT HERE (at the bottom of .content) */}
+        {selectedResult && (
+          <div className="modal-overlay" onClick={() => setSelectedResult(null)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="modal-close" onClick={() => setSelectedResult(null)}>×</button>
+              <h2>{selectedResult.title}</h2>
+              <p>{selectedResult.summary}</p>
+              <a
+                href={selectedResult.media_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="result-link"
+              >
+                Go to Resource
+              </a>
+            </div>
+          </div>
+        )}
+  
+      </div> {/* .content */}
+    </div> // .page-container
   );
 };
 

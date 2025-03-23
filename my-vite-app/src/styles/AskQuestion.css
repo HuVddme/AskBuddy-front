@@ -1,6 +1,6 @@
 /* General Container */
 .page-container {
-  height: 100vh;
+  height: 103vh;
   width: 100vw;
   display: flex;
   justify-content: center;
@@ -13,14 +13,15 @@
 
 /* Card-style Content */
 .content {
-  max-width: 800px;
+  max-width: 950px;
   width: 90%;
   text-align: center;
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 3rem;
+  padding: 1rem;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 40px; /* ⬅️ Add this line */
 }
 
 .content:hover {
@@ -282,4 +283,57 @@ h1 {
 
 .results-scroll::-webkit-scrollbar-track {
   background: transparent;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  text-align: left;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease;
+  position: relative;
+}
+
+.modal-content h2 {
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.modal-content p {
+  font-size: 1rem;
+  color: #34495e;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #333;
 }
