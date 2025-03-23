@@ -25,7 +25,6 @@
 }
 
 .content:hover {
-  transform: translateY(-5px);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
 }
 
@@ -135,11 +134,11 @@ h1 {
 /* Back Button Styling */
 .back-button {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 30px;
+  left: 30px;
   display: inline-block;
   padding: 14px 28px;
-  width: 200px;
+  width: 180px;
   text-align: center;
   background-color: #3498db;
   color: white;
@@ -295,17 +294,18 @@ h1 {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
-  z-index: 999;
+  z-index: 1000; /* Higher z-index to ensure it's on top */
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
   overflow: auto;
+  pointer-events: auto; /* Ensure clicks are captured */
+  will-change: transform; /* Performance optimization */
 }
-
 
 .modal-content {
   background: #fff;
@@ -315,8 +315,8 @@ h1 {
   width: 90%;
   text-align: left;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.3s ease;
   position: relative;
+  z-index: 1001; /* Higher than modal-overlay */
 }
 
 .modal-content h2 {

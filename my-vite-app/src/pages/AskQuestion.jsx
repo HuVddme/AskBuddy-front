@@ -9,7 +9,7 @@ const AskQuestionPage = () => {
   const [question, setQuestion] = useState('');
   const [recording, setRecording] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [results, setResults] = useState([]); // 🔹 New state to store backend search results
+  const [results, setResults] = useState([]); 
   const [selectedResult, setSelectedResult] = useState(null);
 
   const recognitionRef = useRef(null);
@@ -56,7 +56,7 @@ const AskQuestionPage = () => {
     };
   }, []);
 
-  // 🔹 Function to submit question & call backend
+  // Function to submit question & call backend
   const submitQuestion = async () => {
     if (!question.trim()) return;
 
@@ -67,12 +67,10 @@ const AskQuestionPage = () => {
     try {
       const response = await axios.post('http://0.0.0.0:8000/search', { query: userMessage.text });
       console.log('Backend response:', response.data);
-      setResults(response.data); // 🔹 Store results in state
+      setResults(response.data);
     } catch (error) {
       console.error('Error fetching search results:', error);
     }
-
-    // simulateBuddyResponse();
   };
 
   const toggleRecording = () => {
@@ -116,7 +114,9 @@ const AskQuestionPage = () => {
 
   return (
     <div className="page-container">
-      <Link to="/" className="back-button">Back</Link>
+      {!selectedResult && (
+        <Link to="/" className="back-button">Back</Link>
+      )}
       <div className="content">
         <h1>Ask Buddy the Bison</h1>
   
@@ -183,28 +183,26 @@ const AskQuestionPage = () => {
             </div>
           </div>
         )}
-  
-        {/* 🔽 PLACE THIS RIGHT HERE (at the bottom of .content) */}
-        {selectedResult && (
-          <div className="modal-overlay" onClick={() => setSelectedResult(null)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="modal-close" onClick={() => setSelectedResult(null)}>×</button>
-              <h2>{selectedResult.title}</h2>
-              <p>{selectedResult.summary}</p>
-              <a
-                href={selectedResult.media_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="result-link"
-              >
-                Go to Resource
-              </a>
-            </div>
-          </div>
-        )}
-
-  
       </div> {/* .content */}
+      
+      {/* IMPORTANT: Modal moved outside .content div */}
+      {selectedResult && (
+        <div className="modal-overlay" onClick={() => setSelectedResult(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setSelectedResult(null)}>×</button>
+            <h2>{selectedResult.title}</h2>
+            <p>{selectedResult.summary}</p>
+            <a
+              href={selectedResult.media_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="result-link"
+            >
+              Go to Resource
+            </a>
+          </div>
+        </div>
+      )}
     </div> // .page-container
   );
 };
