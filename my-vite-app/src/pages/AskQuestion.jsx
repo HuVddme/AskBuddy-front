@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { FaMicrophone, FaStop } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
@@ -8,11 +9,13 @@ const AskQuestionPage = () => {
   const [question, setQuestion] = useState('');
   const [recording, setRecording] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [results, setResults] = useState([]); // 🔹 New state to store backend search results
+
   const recognitionRef = useRef(null);
   const timeoutRef = useRef(null);
   const isInitializedRef = useRef(false);
 
-  // Initialize Speech Recognition only once
+  // Initialize speech recognition
   useEffect(() => {
     if (!isInitializedRef.current) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -23,7 +26,6 @@ const AskQuestionPage = () => {
         recognitionRef.current.lang = 'en-US';
 
         recognitionRef.current.onresult = (event) => {
-          // Get the latest transcript
           const transcript = Array.from(event.results)
             .map(result => result[0].transcript)
             .join(' ');
@@ -43,53 +45,49 @@ const AskQuestionPage = () => {
       }
     }
 
-    // Cleanup on unmount
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop();
-        } catch (err) {
-          // Ignore errors on cleanup
-        }
+        } catch (err) {}
       }
     };
   }, []);
 
-  // Function to submit the question
-  const submitQuestion = () => {
+  // 🔹 Function to submit question & call backend
+  const submitQuestion = async () => {
     if (!question.trim()) return;
-    
+
     const userMessage = { sender: 'user', text: question };
     setMessages(prev => [...prev, userMessage]);
     setQuestion('');
-    simulateBuddyResponse();
+
+    try {
+      const response = await axios.post('http://0.0.0.0:8000/search', { query: userMessage.text });
+      console.log('Backend response:', response.data);
+      setResults(response.data); // 🔹 Store results in state
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    }
+
+    // simulateBuddyResponse();
   };
 
-  // Toggle recording on/off when the mic button is clicked.
-  // When stopping the recording, the question is automatically submitted.
   const toggleRecording = () => {
     if (!recording) {
-      // Start recording
       setQuestion('');
       try {
-        if (recognitionRef.current) {
-          recognitionRef.current.start();
-          console.log("Started recording");
-          setRecording(true);
-        }
+        recognitionRef.current?.start();
+        console.log("Started recording");
+        setRecording(true);
       } catch (err) {
         console.error("Error starting recording:", err);
       }
     } else {
-      // Stop recording and submit the question
       try {
-        if (recognitionRef.current) {
-          recognitionRef.current.stop();
-          console.log("Stopped recording");
-        }
+        recognitionRef.current?.stop();
+        console.log("Stopped recording");
       } catch (err) {
         console.error("Error stopping recording:", err);
       }
@@ -98,31 +96,22 @@ const AskQuestionPage = () => {
     }
   };
 
-  // Simulate Buddy's AI response
   const simulateBuddyResponse = () => {
     setTimeout(() => {
       const aiResponseText = 'This is a simulated response from Buddy.';
       const aiResponse = { sender: 'buddy', text: aiResponseText };
       setMessages(prev => [...prev, aiResponse]);
-  
-      // Create the utterance for text-to-speech
+
       const utterance = new SpeechSynthesisUtterance(aiResponseText);
-      
-      // Retrieve the list of available voices
       const voices = window.speechSynthesis.getVoices();
-      // Optionally log voices to find the one you prefer
       console.log(voices);
-      
-      // Select a voice by its name or criteria. Replace the voice name with your preferred one.
       const selectedVoice = voices.find(voice => voice.name === 'Google UK English Female');
       if (selectedVoice) {
         utterance.voice = selectedVoice;
       }
-      
       window.speechSynthesis.speak(utterance);
     }, 1000);
   };
-  
 
   return (
     <div className="page-container">
@@ -131,15 +120,14 @@ const AskQuestionPage = () => {
         <h1>Ask Buddy the Bison</h1>
         <form onSubmit={(e) => { e.preventDefault(); submitQuestion(); }} className="form-container">
           <div className="form-group">
-            <label>Your Question:</label>
-            <input 
+            {/* <label>Your Question:</label> */}
+            {/* <input 
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Type your question here..."
-            />
+            /> */}
           </div>
-          {/* Centered Microphone Button acts as both start & submit */}
           <button
             type="button"
             className={`record-btn ${recording ? 'recording' : ''}`}
@@ -148,7 +136,7 @@ const AskQuestionPage = () => {
             {recording ? <FaStop size={20} /> : <FaMicrophone size={20} />}
           </button>
         </form>
-        {/* Recording Indicator */}
+
         <div className="recording-indicator">
           {recording ? (
             <div className="pulse-recording">
@@ -158,7 +146,8 @@ const AskQuestionPage = () => {
             'Click the microphone icon to start recording your question.'
           )}
         </div>
-        {/* Chat Conversation Display */}
+
+        {/* 🔹 Display chat messages */}
         <div className="chat-container">
           {messages.map((msg, index) => (
             <div key={index} className={`chat-message ${msg.sender}`}>
@@ -167,6 +156,33 @@ const AskQuestionPage = () => {
             </div>
           ))}
         </div>
+
+        {/* 🔹 Display list of result titles */}
+        {results.length > 0 && (
+  <div className="results-container">
+    <h2>Search Results:</h2>
+    <div className="results-scroll">
+      <ul>
+        {results.map((item) => (
+            <li key={item._id} className="result-item">
+              <h3 className="result-title">{item.title}</h3>
+              <p className="result-summary">{item.summary}</p>
+              <a
+                href={item.media_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="result-link"
+              >
+                View Resource
+              </a>
+              </li>
+            ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+
       </div>
     </div>
   );
