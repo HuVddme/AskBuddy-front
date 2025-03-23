@@ -237,23 +237,17 @@ const AskQuestionPage = () => {
             )}
 
             {selectedResult.media_type === 'article' && (
-              <iframe
-                src={selectedResult.media_link}
-                title="Article Preview"
-                width="100%"
-                height="500px"
-                style={{ border: '1px solid #ccc', borderRadius: '8px' }}
-              />
-            )}
 
-            {selectedResult.media_type === 'article' && (
-              <iframe
-                src={selectedResult.media_link}
-                title="Article Preview"
-                width="100%"
-                height="400px"
-                style={{ border: '1px solid #ccc', borderRadius: '8px' }}
-              />
+              <>
+                {/* <a
+                  href={selectedResult.media_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="result-link"
+                >
+                  Open Article in New Tab
+                </a> */}
+              </>
             )}
 
             <a
