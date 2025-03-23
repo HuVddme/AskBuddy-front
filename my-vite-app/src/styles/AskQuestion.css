@@ -330,7 +330,11 @@ h1 {
   color: #34495e;
   line-height: 1.5;
   margin-bottom: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
+
+
 
 .modal-close {
   position: absolute;

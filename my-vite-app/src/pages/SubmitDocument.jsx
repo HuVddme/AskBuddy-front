@@ -15,66 +15,73 @@ const SubmitDocumentPage = () => {
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  // Capture window size for Confetti
-  const { width, height } = useWindowSize();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate required fields
+  
+    // Validation
     if (!mediaType || !description || !courseName || !title) {
       setError('Please fill out all fields.');
       return;
     }
-
-    // Validate link or file based on mediaType
-    if (
-      (mediaType === 'article link' || mediaType === 'youtube link') && !uploadLink
-    ) {
+  
+    if ((mediaType === 'article' || mediaType === 'video') && !uploadLink) {
       setError('Please provide a link.');
       return;
     }
-
-    if (
-      (mediaType === 'pdf doc' || mediaType === 'image') && !uploadFile
-    ) {
+  
+    if ((mediaType === 'document' || mediaType === 'image') && !uploadFile) {
       setError('Please upload a file.');
       return;
     }
-
+  
     setError('');
-
-    // Format media_type and media_link
-    const mediaTypeFormatted = mediaType.includes('youtube')
-      ? 'youtube'
-      : mediaType.includes('article')
-      ? 'article'
-      : mediaType.includes('pdf')
-      ? 'pdf'
-      : 'image';
-
-    const mediaLink = uploadLink || 'uploaded_file_placeholder.pdf'; // Replace if handling files later
-
-    const payload = {
-      title,
-      description,
-      media_type: mediaTypeFormatted,
-      media_link: mediaLink,
-      course: courseName,
-      summary: "Explains supervised vs unsupervised learning with visual examples."
-    };
-
+  
+    // ✅ If it's an article or video (no file involved)
+    if (mediaType === 'article' || mediaType === 'video') {
+      const payload = {
+        title,
+        description,
+        media_type: mediaType,
+        media_link: uploadLink,
+        course: courseName,
+        summary: description
+      };
+  
+      try {
+        const response = await axios.post('http://0.0.0.0:8000/resources', payload);
+        console.log('Submitted article/video:', response.data);
+        setSubmitted(true);
+      } catch (err) {
+        console.error('Submission failed:', err);
+        setError('Submission failed. Please try again.');
+      }
+  
+      return;
+    }
+  
+    // ✅ Else: document or image file upload
+    const formData = new FormData();
+    formData.append('file', uploadFile);
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('course', courseName);
+    formData.append('summary', description);
+  
     try {
-      const response = await axios.post('http://0.0.0.0:8000/resources', payload); // replace with your actual backend URL
-
-      console.log('Submission successful:', response.data);
+      const uploadRes = await axios.post(
+        'http://0.0.0.0:8000/upload',
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      console.log('Submitted document/image:', uploadRes.data);
       setSubmitted(true);
-
     } catch (err) {
-      console.error('Submission failed:', err);
-      setError('Submission failed. Please try again.');
+      console.error('Upload failed:', err);
+      setError('File upload failed. Please try again.');
     }
   };
+  
+  
 
   const handleFileChange = (e) => {
     setUploadFile(e.target.files[0]);
@@ -121,9 +128,9 @@ const SubmitDocumentPage = () => {
                 <option value="" disabled>
                   Select type
                 </option>
-                <option value="article link">Article</option>
-                <option value="youtube link">YouTube URL</option>
-                <option value="pdf doc">Document</option>
+                <option value="article">Article</option>
+                <option value="video">YouTube URL</option>
+                <option value="document">Document</option>
                 <option value="image">Picture</option>
               </select>
             </div>
@@ -142,13 +149,13 @@ const SubmitDocumentPage = () => {
               </div>
             )}
 
-            {(mediaType === 'pdf doc' || mediaType === 'image') && (
+            {(mediaType === 'document' || mediaType === 'image') && (
               <div className="form-group-row">
                 <label htmlFor="uploadFile">File:</label>
                 <input
                   type="file"
                   id="uploadFile"
-                  accept={mediaType === 'pdf doc' ? ".pdf" : "image/*"}
+                  accept={mediaType === 'document' ? ".pdf" : "image/*"}
                   onChange={handleFileChange}
                 />
                 {uploadFile && <p className="file-info">Selected: {uploadFile.name}</p>}

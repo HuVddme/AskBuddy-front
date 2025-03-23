@@ -192,14 +192,56 @@ const AskQuestionPage = () => {
             <button className="modal-close" onClick={() => setSelectedResult(null)}>×</button>
             <h2>{selectedResult.title}</h2>
             <p>{selectedResult.summary}</p>
+            {/* Preview based on media_type */}
+            {selectedResult.media_type === 'document' && (
+              <iframe
+                src={selectedResult.media_link}
+                title="Document Preview"
+                width="100%"
+                height="400px"
+                style={{ border: '1px solid #ccc', borderRadius: '8px' }}
+              />
+            )}
+
+            {selectedResult.media_type === 'image' && (
+              <img
+                src={selectedResult.media_link}
+                alt="Image Preview"
+                style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }}
+              />
+            )}
+
+            {selectedResult.media_type === 'video' && (
+              <video
+                controls
+                width="100%"
+                style={{ borderRadius: '8px', maxHeight: '400px' }}
+              >
+                <source src={selectedResult.media_link} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+
+            {selectedResult.media_type === 'article' && (
+              <iframe
+                src={selectedResult.media_link}
+                title="Article Preview"
+                width="100%"
+                height="400px"
+                style={{ border: '1px solid #ccc', borderRadius: '8px' }}
+              />
+            )}
+
             <a
               href={selectedResult.media_link}
               target="_blank"
               rel="noopener noreferrer"
               className="result-link"
+              style={{ display: 'block', marginTop: '15px' }}
             >
               Go to Resource
             </a>
+
           </div>
         </div>
       )}
