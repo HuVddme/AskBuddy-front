@@ -115,37 +115,38 @@ const AskQuestionPage = () => {
   // Function to submit question & call backend
   const submitQuestion = async () => {
     if (!question.trim()) return;
-
+  
     const userMessage = { sender: 'user', text: question };
     setMessages(prev => [...prev, userMessage]);
-    
+  
     setIsLoading(true);
     setQuestion('');
-
+  
     try {
       const response = await axios.post('http://0.0.0.0:8000/search', { query: userMessage.text });
-    
+  
       const buddyResponse = {
         sender: 'buddy',
         text: response.data.summary
       };
-    
+  
       setMessages(prev => [...prev, buddyResponse]);
       speakMessage(buddyResponse.text);
-    
-      setResults(response.data.results);
+  
+      setResults(response.data.results || []);
     } catch (error) {
       console.error('Error fetching search results:', error);
-      const errorMessage = { 
-        sender: 'buddy', 
-        text: "I'm having trouble connecting to the search service. Please try again later." 
+      const errorMessage = {
+        sender: 'buddy',
+        text: "I'm having trouble connecting to the search service. Please try again later."
       };
       setMessages(prev => [...prev, errorMessage]);
       speakMessage(errorMessage.text);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
+  
     
 
   const toggleRecording = () => {
@@ -195,6 +196,29 @@ const AskQuestionPage = () => {
   const handleCloseModal = () => {
     setSelectedResult(null);
   };
+
+    const renderMessageWithLinks = (text) => {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const parts = text.split(urlRegex);
+      return parts.map((part, index) => {
+        if (part.match(urlRegex)) {
+          return (
+            <a
+              key={index}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="message-link"
+            >
+              {part}
+            </a>
+          );
+        }
+        return part;
+      });
+    };
+  
+  
 
   return (
     <div className="page-container">
@@ -262,14 +286,16 @@ const AskQuestionPage = () => {
                 <div className="message-header">
                   <strong>{msg.sender === 'user' ? 'You' : 'Buddy the Bison'}</strong>
                 </div>
-                <div className="message-content">{msg.text}</div>
+                <div className="message-content">
+                  {renderMessageWithLinks(msg.text)}
+                </div>
+
               </div>
             ))
           )}
         </div>
   
-        {/* Search results */}
-        {results.length > 0 && (
+        {results.length > 0 ? (
           <div className="results-container">
             <h2>Found Resources:</h2>
             <div className="results-scroll">
@@ -301,7 +327,17 @@ const AskQuestionPage = () => {
               </ul>
             </div>
           </div>
+        ) : (
+          messages.length > 0 && !isLoading && (
+            <div className="no-results-notice">
+              <p>
+                No internal resources found. Buddy suggested some external resources above. Click the links to view them.
+              </p>
+            </div>
+          )
         )}
+
+
       </div> {/* .content */}
       
       {/* Modal for selected result */}

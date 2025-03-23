@@ -533,3 +533,20 @@ h1 {
   transform: translateY(-2px);
   z-index: 1;
 }
+.no-results-notice {
+  padding: 12px;
+  margin-top: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  color: #666;
+  font-style: italic;
+}
+.message-link {
+  color: #1a73e8;
+  text-decoration: underline;
+}
+
+.message-link:hover {
+  color: #0f5bb5;
+}
