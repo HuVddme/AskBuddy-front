@@ -33,7 +33,7 @@ const LandingPage = () => {
             Ask Buddy
           </Link>
           <Link className="button-link" to="/submit">
-            Share Wisdom
+            Share Some Wisdom
           </Link>
         </div>
       </div>
