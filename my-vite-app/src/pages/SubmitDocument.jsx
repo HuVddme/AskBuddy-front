@@ -20,13 +20,13 @@ const SubmitDocumentPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Validate required fields
     if (!mediaType || !description || !courseName || !title) {
       setError('Please fill out all fields.');
       return;
     }
-  
+
     // Validate link or file based on mediaType
     if (
       (mediaType === 'article link' || mediaType === 'youtube link') && !uploadLink
@@ -34,16 +34,16 @@ const SubmitDocumentPage = () => {
       setError('Please provide a link.');
       return;
     }
-  
+
     if (
       (mediaType === 'pdf doc' || mediaType === 'image') && !uploadFile
     ) {
       setError('Please upload a file.');
       return;
     }
-  
+
     setError('');
-  
+
     // Format media_type and media_link
     const mediaTypeFormatted = mediaType.includes('youtube')
       ? 'youtube'
@@ -52,9 +52,9 @@ const SubmitDocumentPage = () => {
       : mediaType.includes('pdf')
       ? 'pdf'
       : 'image';
-  
+
     const mediaLink = uploadLink || 'uploaded_file_placeholder.pdf'; // Replace if handling files later
-  
+
     const payload = {
       title,
       description,
@@ -63,32 +63,47 @@ const SubmitDocumentPage = () => {
       course: courseName,
       summary: "Explains supervised vs unsupervised learning with visual examples."
     };
-  
+
     try {
       const response = await axios.post('http://0.0.0.0:8000/resources', payload); // replace with your actual backend URL
 
       console.log('Submission successful:', response.data);
       setSubmitted(true);
-  
+
     } catch (err) {
       console.error('Submission failed:', err);
       setError('Submission failed. Please try again.');
     }
   };
-  
+
   const handleFileChange = (e) => {
     setUploadFile(e.target.files[0]);
   };
 
   return (
     <div className="page-container">
+      {/* Back button to go to the home page */}
+      <a href="/" className="back-button">Back</a>
+
       {submitted ? (
         <SubmittedPage title={title} />
       ) : (
         <div className="content">
-          <h1>Submit Your Document</h1>
+          <h1>Help Buddy Help You!</h1>
           <form onSubmit={handleSubmit} className="form-container">
             {error && <p className="error">{error}</p>}
+
+              {/* Title row */}
+              <div className="form-group-row">
+                <label htmlFor="title">Title:</label>
+                  <input
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                   placeholder="E.g. Heaps"
+                 />
+             </div>
 
             {/* Media Type Row */}
             <div className="form-group-row">
@@ -106,10 +121,10 @@ const SubmitDocumentPage = () => {
                 <option value="" disabled>
                   Select type
                 </option>
-                <option value="article link">Article Link</option>
-                <option value="youtube link">YouTube Link</option>
-                <option value="pdf doc">PDF Document</option>
-                <option value="image">Image</option>
+                <option value="article link">Article</option>
+                <option value="youtube link">YouTube URL</option>
+                <option value="pdf doc">Document</option>
+                <option value="image">Picture</option>
               </select>
             </div>
 
@@ -120,7 +135,7 @@ const SubmitDocumentPage = () => {
                 <input
                   type="text"
                   id="uploadLink"
-                  placeholder="Paste your link here"
+                  placeholder="E.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                   value={uploadLink}
                   onChange={(e) => setUploadLink(e.target.value)}
                 />
@@ -140,6 +155,18 @@ const SubmitDocumentPage = () => {
               </div>
             )}
 
+            {/* Course Name row */}
+            <div className="form-group-row">
+              <label htmlFor="courseName">Course Name:</label>
+                <input
+                  type="text"
+                  id="courseName"
+                  value={courseName}
+                  onChange={(e) => setCourseName(e.target.value)}
+                  placeholder="E.g. Intro to Computer Science"
+                />
+            </div>
+
             {/* Description row */}
             <div className="form-group-row">
               <label htmlFor="description">Description:</label>
@@ -147,32 +174,8 @@ const SubmitDocumentPage = () => {
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="summary of upload"
+                placeholder="E.g. This PDF gives a clear and simple explanation of heaps, including how Min-Heaps and Max-Heaps work."
                 rows={4}
-              />
-            </div>
-
-            {/* Course Name row */}
-            <div className="form-group-row">
-              <label htmlFor="courseName">Course Name:</label>
-              <input
-                type="text"
-                id="courseName"
-                value={courseName}
-                onChange={(e) => setCourseName(e.target.value)}
-                placeholder="Enter course name"
-              />
-            </div>
-
-            {/* Title row */}
-            <div className="form-group-row">
-              <label htmlFor="title">Title:</label>
-              <input
-                type="text"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter title"
               />
             </div>
 

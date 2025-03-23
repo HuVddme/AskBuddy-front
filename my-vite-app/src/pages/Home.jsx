@@ -29,11 +29,11 @@ const LandingPage = () => {
         <h2 className="typewriter-text">{typedText}</h2>
         
         <div className="buttons-row">
-          <Link className="button-link" to="/submit">
-            Submit Your Document
+        <Link className="button-link" to="/ask">
+            Ask Buddy
           </Link>
-          <Link className="button-link" to="/ask">
-            Ask a Question
+          <Link className="button-link" to="/submit">
+            Share Wisdom
           </Link>
         </div>
       </div>

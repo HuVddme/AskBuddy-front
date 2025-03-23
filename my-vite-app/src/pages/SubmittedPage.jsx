@@ -4,13 +4,12 @@ import { useWindowSize } from 'react-use';
 import { Link } from 'react-router-dom';
 import "../styles/SubmittedPage.css";
 
-
 const SubmittedPage = ({ title = '' }) => {
   // Capture window size for Confetti
   const { width, height } = useWindowSize();
   const [showConfetti, setShowConfetti] = useState(true);
 
-  // Optional: stop confetti after a certain time to improve performance
+  // Stop confetti after 5 seconds to improve performance
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowConfetti(false);
@@ -37,8 +36,14 @@ const SubmittedPage = ({ title = '' }) => {
         </p>
         
         <div className="buttons-row">
-          <Link to="/submit" className="button-link">Submit Another</Link>
-          <Link to="/resources" className="button-link">View Resources</Link>
+          <Link
+            to="/submit"
+            onClick={() => window.location.reload()}
+            className="button-link"
+          >
+            Submit Another
+          </Link>
+          <Link to="/ask" className="button-link">Ask Buddy</Link>
         </div>
       </div>
     </div>

@@ -119,35 +119,33 @@ button[type="submit"]:hover {
   margin-top: 5px;
 }
 
-.submission-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #2ecc71;
+/* Back Button Styling */
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: inline-block;
+  padding: 14px 28px;
+  width: 200px; /* Adjusted width */
+  text-align: center; /* Center the text */
+  background-color: #3498db;
   color: white;
-  padding: 20px 40px;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  animation: popIn 0.5s ease forwards;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-@keyframes popIn {
-  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-}
-
-input[type="file"] {
-  background-color: white;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  width: 100%;
+  text-decoration: none;
+  border-radius: 30px;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border: 2px solid #3498db;
   cursor: pointer;
 }
+
+.back-button:hover {
+  background-color: transparent;
+  color: #3498db;
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
 
 /* Media queries for responsive design */
 @media (max-width: 768px) {

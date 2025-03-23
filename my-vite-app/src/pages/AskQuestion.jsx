@@ -14,6 +14,7 @@ const AskQuestionPage = () => {
 
   return (
     <div className="page-container">
+      <Link to="/" className="back-button">Back</Link>
       <div className="content">
         <h1>Ask Buddy the Bison</h1>
         <form onSubmit={handleSubmit} className="form-container">
