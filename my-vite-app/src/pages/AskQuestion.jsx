@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { FaMicrophone, FaStop } from 'react-icons/fa';
+import { FaMicrophone, FaStop, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 import '../styles/AskQuestion.css';
@@ -11,14 +11,20 @@ const AskQuestionPage = () => {
   const [messages, setMessages] = useState([]);
   const [results, setResults] = useState([]); 
   const [selectedResult, setSelectedResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [voices, setVoices] = useState([]);
+  const [selectedVoice, setSelectedVoice] = useState(null);
 
   const recognitionRef = useRef(null);
   const timeoutRef = useRef(null);
   const isInitializedRef = useRef(false);
+  const chatContainerRef = useRef(null);
 
-  // Initialize speech recognition
+  // Initialize speech recognition and synthesis
   useEffect(() => {
     if (!isInitializedRef.current) {
+      // Initialize speech recognition
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
         recognitionRef.current = new SpeechRecognition();
@@ -36,6 +42,7 @@ const AskQuestionPage = () => {
         recognitionRef.current.onerror = (event) => {
           console.error('Speech recognition error:', event.error);
           setRecording(false);
+          speakMessage("I had trouble hearing you. Please try again.");
         };
 
         recognitionRef.current.onend = () => {
@@ -44,6 +51,29 @@ const AskQuestionPage = () => {
 
         isInitializedRef.current = true;
       }
+
+      // Initialize speech synthesis voices
+      const loadVoices = () => {
+        const availableVoices = window.speechSynthesis.getVoices();
+        console.log("Available voices:", availableVoices);
+        setVoices(availableVoices);
+        
+        // Set default voice - prefer a natural sounding voice
+        const preferredVoice = availableVoices.find(voice => 
+          voice.name.includes('Google') || 
+          voice.name.includes('Natural') ||
+          voice.name.includes('Samantha')
+        );
+        setSelectedVoice(preferredVoice || availableVoices[0]);
+      };
+
+      // Chrome requires this event for voice loading
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadVoices;
+      }
+      
+      // Initial load attempt
+      loadVoices();
     }
 
     return () => {
@@ -53,8 +83,36 @@ const AskQuestionPage = () => {
           recognitionRef.current.stop();
         } catch (err) {}
       }
+      window.speechSynthesis.cancel(); // Cancel any ongoing speech
     };
   }, []);
+
+  // Scroll chat to bottom when messages update
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // Function to speak messages
+  const speakMessage = (text) => {
+    if (!audioEnabled) return;
+    
+    // Cancel any current speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+    
+    // Customize speech parameters
+    utterance.rate = 1.0;  // Speed
+    utterance.pitch = 1.0; // Pitch
+    utterance.volume = 1.0; // Volume
+    
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Function to submit question & call backend
   const submitQuestion = async () => {
@@ -62,15 +120,49 @@ const AskQuestionPage = () => {
 
     const userMessage = { sender: 'user', text: question };
     setMessages(prev => [...prev, userMessage]);
+    
+    // Speak welcome message on first interaction
+    if (messages.length === 0) {
+      speakMessage("Thanks for your question. I'm looking that up for you now.");
+    }
+    
+    setIsLoading(true);
     setQuestion('');
 
     try {
-      ''
       const response = await axios.post('http://0.0.0.0:8000/search', { query: userMessage.text });
       console.log('Backend response:', response.data);
+      
+      // Add a response message from Buddy
+      const resultsCount = response.data.length;
+      let buddyResponse;
+      
+      if (resultsCount > 0) {
+        buddyResponse = { 
+          sender: 'buddy', 
+          text: `I found ${resultsCount} resource${resultsCount === 1 ? '' : 's'} that might help. You can click on any result to see more details.` 
+        };
+      } else {
+        buddyResponse = { 
+          sender: 'buddy', 
+          text: "I couldn't find any matching resources for your question. Could you try rephrasing it or ask something else?" 
+        };
+      }
+      
+      setMessages(prev => [...prev, buddyResponse]);
+      speakMessage(buddyResponse.text);
+      
       setResults(response.data);
     } catch (error) {
       console.error('Error fetching search results:', error);
+      const errorMessage = { 
+        sender: 'buddy', 
+        text: "I'm having trouble connecting to the search service. Please try again later." 
+      };
+      setMessages(prev => [...prev, errorMessage]);
+      speakMessage(errorMessage.text);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -81,8 +173,10 @@ const AskQuestionPage = () => {
         recognitionRef.current?.start();
         console.log("Started recording");
         setRecording(true);
+        speakMessage("I'm listening. Please ask your question.");
       } catch (err) {
         console.error("Error starting recording:", err);
+        speakMessage("I couldn't access your microphone. Please check your browser permissions.");
       }
     } else {
       try {
@@ -92,25 +186,32 @@ const AskQuestionPage = () => {
         console.error("Error stopping recording:", err);
       }
       setRecording(false);
-      submitQuestion();
+      
+      // Only submit if there's a question
+      if (question.trim()) {
+        submitQuestion();
+      } else {
+        speakMessage("I didn't catch that. Please try speaking again.");
+      }
     }
   };
 
-  const simulateBuddyResponse = () => {
-    setTimeout(() => {
-      const aiResponseText = 'This is a simulated response from Buddy.';
-      const aiResponse = { sender: 'buddy', text: aiResponseText };
-      setMessages(prev => [...prev, aiResponse]);
+  const toggleAudio = () => {
+    const newState = !audioEnabled;
+    setAudioEnabled(newState);
+    
+    if (!newState) {
+      window.speechSynthesis.cancel(); // Stop any current speech
+    }
+  };
 
-      const utterance = new SpeechSynthesisUtterance(aiResponseText);
-      const voices = window.speechSynthesis.getVoices();
-      console.log(voices);
-      const selectedVoice = voices.find(voice => voice.name === 'Google UK English Female');
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-      }
-      window.speechSynthesis.speak(utterance);
-    }, 1000);
+  const handleResultClick = (result) => {
+    setSelectedResult(result);
+    const description = `You selected: ${result.title}. ${result.summary ? result.summary.substring(0, 100) + '...' : ''}`;
+  };
+
+  const handleCloseModal = () => {
+    setSelectedResult(null);
   };
 
   return (
@@ -120,147 +221,175 @@ const AskQuestionPage = () => {
       )}
       <div className="content">
         <h1>Ask Buddy the Bison</h1>
+        
+        <div className="audio-toggle">
+          <button 
+            onClick={toggleAudio} 
+            className="audio-btn"
+            aria-label={audioEnabled ? "Disable audio responses" : "Enable audio responses"}
+            title={audioEnabled ? "Disable audio responses" : "Enable audio responses"}
+          >
+            {audioEnabled ? <FaVolumeUp size={20} /> : <FaVolumeMute size={20} />}
+          </button>
+          <span className="audio-label">{audioEnabled ? "Audio On" : "Audio Off"}</span>
+        </div>
   
-        {/* Your form and mic button */}
+        {/* Question form and mic button */}
         <form onSubmit={(e) => { e.preventDefault(); submitQuestion(); }} className="form-container">
           <div className="form-group">
-            {/* input or other controls */}
+            <div className="button-group">
+              <button
+                type="button"
+                className={`record-btn ${recording ? 'recording' : ''}`}
+                onClick={toggleRecording}
+                aria-label={recording ? "Stop recording" : "Start recording"}
+              >
+                {recording ? <FaStop size={20} /> : <FaMicrophone size={20} />}
+              </button>
+            </div>
           </div>
-          <button
-            type="button"
-            className={`record-btn ${recording ? 'recording' : ''}`}
-            onClick={toggleRecording}
-          >
-            {recording ? <FaStop size={20} /> : <FaMicrophone size={20} />}
-          </button>
         </form>
   
         {/* Recording indicator */}
         <div className="recording-indicator">
           {recording ? (
             <div className="pulse-recording">
+              <div className="recording-animation"></div>
               Recording in progress... Click the stop button when finished.
             </div>
           ) : (
-            'Click the microphone icon to start recording your question.'
+            <div>
+              {isLoading ? 
+                <div className="loading-spinner">Looking up your question...</div> : 
+                'Click the microphone icon to start recording your question, or type it above.'
+              }
+            </div>
           )}
         </div>
   
         {/* Chat messages */}
-        <div className="chat-container">
-          {messages.map((msg, index) => (
-            <div key={index} className={`chat-message ${msg.sender}`}>
-              <strong>{msg.sender === 'user' ? 'You' : 'Buddy'}: </strong>
-              <span>{msg.text}</span>
+        <div className="chat-container" ref={chatContainerRef}>
+          {messages.length === 0 ? (
+            <div className="welcome-message">
+              <p>Hello! I'm Buddy the Bison. How can I help you today?</p>
+              <p className="welcome-hint">You can ask me questions about the park, wildlife, activities, or anything else you'd like to know.</p>
             </div>
-          ))}
+          ) : (
+            messages.map((msg, index) => (
+              <div key={index} className={`chat-message ${msg.sender}`}>
+                <div className="message-header">
+                  <strong>{msg.sender === 'user' ? 'You' : 'Buddy the Bison'}</strong>
+                </div>
+                <div className="message-content">{msg.text}</div>
+              </div>
+            ))
+          )}
         </div>
   
         {/* Search results */}
         {results.length > 0 && (
           <div className="results-container">
-            <h2>Search Results:</h2>
+            <h2>Found Resources:</h2>
             <div className="results-scroll">
               <ul>
-              {results.map((item) => (
-                <li
-                  key={item._id}
-                  className="result-item hover-highlight"
-                  onClick={() => setSelectedResult(item)}
-                >
-                  <h3 className="result-title">{item.title}</h3>
-                  <a
-                    href={item.media_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="result-link"
-                    onClick={(e) => e.stopPropagation()}
+                {results.map((item) => (
+                  <li
+                    key={item._id}
+                    className="result-item hover-highlight"
+                    onClick={() => handleResultClick(item)}
                   >
-                    View Resource
-                  </a>
-                </li>
-              ))}
+                    <h3 className="result-title">{item.title}</h3>
+                    <p className="result-type">
+                      {item.media_type === 'document' && '📄 Document'}
+                      {item.media_type === 'image' && '🖼️ Image'}
+                      {item.media_type === 'video' && '🎬 Video'}
+                      {item.media_type === 'article' && '📰 Article'}
+                    </p>
+                    <a
+                      href={item.media_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="result-link"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      View Resource
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         )}
       </div> {/* .content */}
       
-      {/* IMPORTANT: Modal moved outside .content div */}
+      {/* Modal for selected result */}
       {selectedResult && (
-        <div className="modal-overlay" onClick={() => setSelectedResult(null)}>
+        <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setSelectedResult(null)}>×</button>
+            <button className="modal-close" onClick={handleCloseModal} aria-label="Close">×</button>
             <h2>{selectedResult.title}</h2>
-            <p>{selectedResult.summary}</p>
-            {/* Preview based on media_type */}
+            <p className="result-type-badge">
+              {selectedResult.media_type === 'document' && '📄 Document'}
+              {selectedResult.media_type === 'image' && '🖼️ Image'}
+              {selectedResult.media_type === 'video' && '🎬 Video'}
+              {selectedResult.media_type === 'article' && '📰 Article'}
+            </p>
+            <p className="modal-summary">{selectedResult.summary}</p>
+            
             {/* Media Previews */}
-            {selectedResult.media_type === 'document' && (
-              <iframe
-                src={`https://docs.google.com/gview?url=${encodeURIComponent(selectedResult.media_link)}&embedded=true`}
-                title="Document Preview"
-                width="100%"
-                height="500px"
-                style={{ border: '1px solid #ccc', borderRadius: '8px' }}
-              />
-            )}
+            <div className="media-preview">
+              {selectedResult.media_type === 'document' && (
+                <iframe
+                  src={`https://docs.google.com/gview?url=${encodeURIComponent(selectedResult.media_link)}&embedded=true`}
+                  title="Document Preview"
+                  width="100%"
+                  height="500px"
+                  style={{ border: '1px solid #ccc', borderRadius: '8px' }}
+                />
+              )}
 
-            {selectedResult.media_type === 'image' && (
-              <img
-                src={selectedResult.media_link}
-                alt="Image Preview"
-                style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }}
-              />
-            )}
+              {selectedResult.media_type === 'image' && (
+                <img
+                  src={selectedResult.media_link}
+                  alt={selectedResult.title}
+                  style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }}
+                />
+              )}
 
-            {selectedResult.media_type === 'video' && selectedResult.media_link.includes('youtube.com') && (
-              <iframe
-                width="100%"
-                height="400px"
-                src={`https://www.youtube.com/embed/${new URL(selectedResult.media_link).searchParams.get('v')}`}
-                title="YouTube Video"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{ borderRadius: '8px' }}
-              />
-            )}
+              {selectedResult.media_type === 'video' && selectedResult.media_link.includes('youtube.com') && (
+                <iframe
+                  width="100%"
+                  height="400px"
+                  src={`https://www.youtube.com/embed/${new URL(selectedResult.media_link).searchParams.get('v')}`}
+                  title="YouTube Video"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{ borderRadius: '8px' }}
+                />
+              )}
 
-            {selectedResult.media_type === 'video' && !selectedResult.media_link.includes('youtube.com') && (
-              <video
-                controls
-                width="100%"
-                style={{ borderRadius: '8px', maxHeight: '400px' }}
-              >
-                <source src={selectedResult.media_link} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            )}
-
-            {selectedResult.media_type === 'article' && (
-
-              <>
-                {/* <a
-                  href={selectedResult.media_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="result-link"
+              {selectedResult.media_type === 'video' && !selectedResult.media_link.includes('youtube.com') && (
+                <video
+                  controls
+                  width="100%"
+                  style={{ borderRadius: '8px', maxHeight: '400px' }}
                 >
-                  Open Article in New Tab
-                </a> */}
-              </>
-            )}
+                  <source src={selectedResult.media_link} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
+            </div>
 
             <a
               href={selectedResult.media_link}
               target="_blank"
               rel="noopener noreferrer"
-              className="result-link"
-              style={{ display: 'block', marginTop: '15px' }}
+              className="view-resource-btn"
+              aria-label={`Open ${selectedResult.title} in a new tab`}
             >
-              Go to Resource
+              Open Resource
             </a>
-
           </div>
         </div>
       )}

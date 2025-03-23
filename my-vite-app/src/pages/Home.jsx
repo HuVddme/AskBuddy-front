@@ -4,7 +4,7 @@ import "../styles/Home.css";
 
 const LandingPage = () => {
   const [typedText, setTypedText] = useState("")
-  const fullText = "What can Buddy do for you today?"
+  const fullText = "Whhat can Buddy do for you today?"
   const speed = 100 // typing speed in ms
 
   useEffect(() => {
