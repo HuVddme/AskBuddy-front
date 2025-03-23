@@ -127,8 +127,8 @@ button[type="submit"]:hover {
 /* Back Button Styling */
 .back-button {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 4%;
+  left: 40px;
   display: inline-block;
   padding: 14px 28px;
   width: 200px; /* Adjusted width */

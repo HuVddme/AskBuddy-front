@@ -57,14 +57,12 @@ const AskQuestionPage = () => {
         const availableVoices = window.speechSynthesis.getVoices();
         console.log("Available voices:", availableVoices);
         setVoices(availableVoices);
-        
-        // Set default voice - prefer a natural sounding voice
-        const preferredVoice = availableVoices.find(voice => 
-          voice.name.includes('Google') || 
-          voice.name.includes('Natural') ||
-          voice.name.includes('Samantha')
-        );
-        setSelectedVoice(preferredVoice || availableVoices[0]);
+        console.log("Available voices:", availableVoices);
+          // Force selection of Google UK English Male if available
+        const googleUKMale = availableVoices.find(voice => voice.name === 'Google UK English Male');
+
+        // Fall back to first available if not found
+        setSelectedVoice(googleUKMale);
       };
 
       // Chrome requires this event for voice loading
@@ -120,11 +118,6 @@ const AskQuestionPage = () => {
 
     const userMessage = { sender: 'user', text: question };
     setMessages(prev => [...prev, userMessage]);
-    
-    // Speak welcome message on first interaction
-    if (messages.length === 0) {
-      speakMessage("Thanks for your question. I'm looking that up for you now.");
-    }
     
     setIsLoading(true);
     setQuestion('');

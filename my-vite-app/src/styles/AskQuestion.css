@@ -283,8 +283,8 @@ h1 {
 /* Back Button Styling */
 .back-button {
   position: absolute;
-  top: 30px;
-  left: 30px;
+  top: 50px;
+  left: 50px;
   display: inline-block;
   padding: 14px 28px;
   width: 180px;
