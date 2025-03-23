@@ -124,28 +124,16 @@ const AskQuestionPage = () => {
 
     try {
       const response = await axios.post('http://0.0.0.0:8000/search', { query: userMessage.text });
-      console.log('Backend response:', response.data);
-      
-      // Add a response message from Buddy
-      const resultsCount = response.data.length;
-      let buddyResponse;
-      
-      if (resultsCount > 0) {
-        buddyResponse = { 
-          sender: 'buddy', 
-          text: `I found ${resultsCount} resource${resultsCount === 1 ? '' : 's'} that might help. You can click on any result to see more details.` 
-        };
-      } else {
-        buddyResponse = { 
-          sender: 'buddy', 
-          text: "I couldn't find any matching resources for your question. Could you try rephrasing it or ask something else?" 
-        };
-      }
-      
+    
+      const buddyResponse = {
+        sender: 'buddy',
+        text: response.data.summary
+      };
+    
       setMessages(prev => [...prev, buddyResponse]);
       speakMessage(buddyResponse.text);
-      
-      setResults(response.data);
+    
+      setResults(response.data.results);
     } catch (error) {
       console.error('Error fetching search results:', error);
       const errorMessage = { 
@@ -157,7 +145,8 @@ const AskQuestionPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
+    
 
   const toggleRecording = () => {
     if (!recording) {
