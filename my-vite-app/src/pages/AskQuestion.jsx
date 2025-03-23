@@ -246,26 +246,6 @@ const AskQuestionPage = () => {
               />
             )}
 
-
-            {selectedResult.media_type === 'image' && (
-              <img
-                src={selectedResult.media_link}
-                alt="Image Preview"
-                style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }}
-              />
-            )}
-
-            {selectedResult.media_type === 'video' && (
-              <video
-                controls
-                width="100%"
-                style={{ borderRadius: '8px', maxHeight: '400px' }}
-              >
-                <source src={selectedResult.media_link} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            )}
-
             {selectedResult.media_type === 'article' && (
               <iframe
                 src={selectedResult.media_link}
