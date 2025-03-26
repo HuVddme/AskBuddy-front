@@ -43,8 +43,9 @@ const SubmitDocumentPage = () => {
           course: courseName,
           summary: description
         };
-
-        await axios.post('http://0.0.0.0:8000/resources', payload);
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+        await axios.post(`${API_BASE_URL}/resources`, payload);
+        
       } else {
         const formData = new FormData();
         formData.append('file', uploadFile);
@@ -53,8 +54,9 @@ const SubmitDocumentPage = () => {
         formData.append('course', courseName);
         formData.append('summary', description);
 
-        await axios.post('http://0.0.0.0:8000/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+        await axios.post(`${API_BASE_URL}/upload`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
         });
       }
 

@@ -123,7 +123,10 @@ const AskQuestionPage = () => {
     setQuestion('');
   
     try {
-      const response = await axios.post('http://0.0.0.0:8000/search', { query: userMessage.text });
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+      const response = await axios.post(`${API_BASE_URL}/search`, {
+        query: userMessage.text,
+      });
   
       const buddyResponse = {
         sender: 'buddy',
